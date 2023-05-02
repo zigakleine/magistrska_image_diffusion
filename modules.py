@@ -5,7 +5,7 @@ import torch.nn.functional as F
 
 class UNet(nn.Module):
 
-    def __init__(self, c_in=3, c_out=3, time_dim=256, device="cpu"):
+    def __init__(self, c_in=3, c_out=3, time_dim=256, device="cuda"):
         super().__init__()
 
         self.device = device
@@ -159,8 +159,6 @@ class SelfAttention(nn.Module):
         attention_value = attention_value + x
         attention_value = self.ff_self(attention_value) + attention_value
         return attention_value.swapaxes(2, 1).view(-1, self.channels, self.size, self.size)
-
-
 
 
 

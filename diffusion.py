@@ -7,8 +7,8 @@ from tqdm import tqdm
 import logging
 
 from torch.utils.tensorboard import SummaryWriter
-from diffusion.utils import *
-from diffusion.modules import *
+from utils import *
+from modules import *
 
 
 logging.basicConfig(format="%(asctime)s - %(levelname)s: %(message)s", level=logging.INFO, datefmt="%I:%M:%S")
@@ -103,17 +103,25 @@ def launch():
     args = parser.parse_args()
     args.run_name = "DDPM_Uncondtional"
     args.epochs = 500
-    args.batch_size = 12
+    args.batch_size = 1
     args.image_size = 64
-    args.dataset_path = "/Users/zigakleine/Desktop/magistrska_fuckery/diffusion/images"
-    args.device = "cpu"
+    args.dataset_path = "/home/zigakl/Desktop/magistrska_image_diffusion/images"
+    args.device = "cuda"
     args.lr = 3e-4
     train(args)
 
 if __name__ == "__main__":
-    #diff = Diffusion(device="cpu")
-    #print(diff.alpha.shape)
-    #print(diff.beta.shape)
-    launch()
-
+    #torch.cuda.empty_cache()
+    # launch()
+    device = "cuda"
+    model = UNet().to(device)
+    ckpt = torch.load("./models/DDPM_Uncondtional/ckpt.pt")
+    model.load_state_dict(ckpt)
+    diffusion = Diffusion(img_size=64, device=device)
+    imgs = []
+    for i in range(2):
+        x = diffusion.sample(model, n=1)
+        imgs.append(x)
+    imgs = torch.Tensor(imgs)
+    plot_images(imgs)
 
